@@ -1,0 +1,584 @@
+{% extends "base.html" %}
+
+{% block title %}Examiner Dashboard - CYGENTIC AI Test Center{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Mobile Menu Button -->
+    <button id="mobile-sidebar-toggle" class="lg:hidden fixed top-20 left-4 z-30 p-2 bg-slate-800/90 rounded-lg border border-cyan-500/20 text-cyan-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+    </button>
+
+    <!-- Enhanced Sidebar Navigation -->
+    <aside id="examiner-sidebar" class="dashboard-sidebar">
+        <div class="p-6">
+            <!-- User Profile Section -->
+            <div class="mb-8">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center animate-glow">
+                        <span class="text-lg font-bold text-white">{{ session.username[0].upper() if session.username else 'E' }}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-semibold">{{ session.username or 'Examiner' }}</h3>
+                        <p class="text-sm text-gray-400">Examiner Portal</p>
+                        <div class="flex items-center mt-1">
+                            <div class="status-online mr-2"></div>
+                            <span class="text-xs text-green-400">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Student Management & Quick Actions -->
+            <div class="space-y-8">
+                <!-- Student Management Module -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <svg class="w-6 h-6 text-cyan-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                            </svg>
+                            Student Overview
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Student Stats -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="text-center p-3 bg-slate-700/30 rounded-lg">
+                                <div class="text-2xl font-bold text-cyan-400">247</div>
+                                <div class="text-xs text-gray-400">Total Students</div>
+                            </div>
+                            <div class="text-center p-3 bg-slate-700/30 rounded-lg">
+                                <div class="text-2xl font-bold text-green-400">36</div>
+                                <div class="text-xs text-gray-400">Active Now</div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Student Activity -->
+                        <div class="space-y-3">
+                            <div class="flex items-center p-3 bg-slate-700/20 rounded-lg">
+                                <div class="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-xs font-bold text-white">JS</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-white">John Smith</p>
+                                    <p class="text-xs text-gray-400">Completed Math Quiz • Score: 92%</p>
+                                </div>
+                                <div class="status-online"></div>
+                            </div>
+
+                            <div class="flex items-center p-3 bg-slate-700/20 rounded-lg">
+                                <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-xs font-bold text-white">MJ</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-white">Maria Johnson</p>
+                                    <p class="text-xs text-gray-400">Taking Physics Quiz • 30min left</p>
+                                </div>
+                                <div class="status-busy"></div>
+                            </div>
+
+                            <div class="flex items-center p-3 bg-slate-700/20 rounded-lg">
+                                <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-xs font-bold text-white">RB</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-white">Robert Brown</p>
+                                    <p class="text-xs text-gray-400">Submitted Chemistry Lab • Pending</p>
+                                </div>
+                                <div class="status-away"></div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary w-full mt-4">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                            </svg>
+                            Manage All Students
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <svg class="w-6 h-6 text-purple-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Quick Actions
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <a href="{{ url_for('examiner_schedule') }}" class="flex items-center p-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors duration-200">Schedule New Test</h3>
+                                    <p class="text-sm text-gray-400">Create examination session</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ url_for('examiner_questions') }}" class="flex items-center p-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white group-hover:text-purple-400 transition-colors duration-200">Add Questions</h3>
+                                    <p class="text-sm text-gray-400">Expand question bank</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ url_for('examiner_monitoring') }}" class="flex items-center p-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white group-hover:text-green-400 transition-colors duration-200">Live Monitor</h3>
+                                    <p class="text-sm text-gray-400">View active sessions</p>
+                                </div>
+                            </a>
+
+                            <a href="#" class="flex items-center p-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group">
+                                <div class="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white group-hover:text-cyan-400 transition-colors duration-200">Review Results</h3>
+                                    <p class="text-sm text-gray-400">Analyze performance</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <svg class="w-6 h-6 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            System Activity
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <div class="flex items-center p-3 bg-slate-700/20 rounded-lg">
+                                <div class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-white">Math Final Created</p>
+                                    <p class="text-xs text-gray-400 mt-1">50 questions added • 2 hours ago</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center p-3 bg-slate-700/20 rounded-lg">
+                                <div class="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-white">Physics Session Started</p>
+                                    <p class="text-xs text-gray-400 mt-1">12 students joined • 15 min ago</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center p-3 bg-slate-700/20 rounded-lg">
+                                <div class="w-8 h-8 bg-yellow-500/20 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-white">AI Alert Generated</p>
+                                    <p class="text-xs text-gray-400 mt-1">Suspicious behavior detected • 5 min ago</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center p-3 bg-slate-700/20 rounded-lg">
+                                <div class="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-white">Results Processed</p>
+                                    <p class="text-xs text-gray-400 mt-1">Chemistry Quiz graded • 1 hour ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Mobile Sidebar Toggle Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.getElementById('examiner-sidebar');
+        
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('mobile-open');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth < 1024) {
+                    if (!sidebar.contains(event.target) && !mobileToggle.contains(event.target)) {
+                        sidebar.classList.remove('mobile-open');
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+            <!-- Navigation Menu -->
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('examiner_dashboard') }}" class="sidebar-link active">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{{ url_for('examiner_monitoring') }}" class="sidebar-link">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Live Monitoring</span>
+                    <span class="badge badge-danger ml-auto">2</span>
+                </a>
+
+                <a href="{{ url_for('examiner_questions') }}" class="sidebar-link">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>Question Bank</span>
+                    <span class="badge badge-primary ml-auto">184</span>
+                </a>
+
+                <a href="{{ url_for('examiner_schedule') }}" class="sidebar-link">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h8m-6 0v10a2 2 0 002 2h4a2 2 0 002-2V7M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h3"/>
+                    </svg>
+                    <span>Test Scheduling</span>
+                </a>
+
+                <a href="#" class="sidebar-link">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                    </svg>
+                    <span>Student Management</span>
+                </a>
+
+                <a href="#" class="sidebar-link">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span>Results Management</span>
+                </a>
+
+                <hr class="border-slate-700 my-4">
+
+                <a href="#" class="sidebar-link">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>Settings</span>
+                </a>
+
+                <a href="#" class="sidebar-link">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Help & Support</span>
+                </a>
+
+                <a href="{{ url_for('logout') }}" class="sidebar-link text-red-400 hover:text-red-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Dashboard Header with Notifications -->
+        <div class="dashboard-topbar mb-8">
+            <div>
+                <h1 class="topbar-title">Examiner Dashboard</h1>
+                <p class="topbar-subtitle">Monitor tests, manage questions, and oversee student assessments</p>
+            </div>
+            <div class="topbar-actions">
+                <!-- Live Sessions Indicator -->
+                <div class="relative">
+                    <button class="p-3 bg-green-500/20 rounded-lg hover:bg-green-500/30 transition-colors duration-200">
+                        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </button>
+                    <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+                        3
+                    </div>
+                </div>
+
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <button class="p-3 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-colors duration-200">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-3.5-3.5a1.5 1.5 0 010-2.12L20 8h-5V4a2 2 0 00-2-2H9a2 2 0 00-2 2v4H2l3.5 3.38a1.5 1.5 0 010 2.12L2 17h5v3a2 2 0 002 2h6a2 2 0 002-2v-3z"/>
+                        </svg>
+                    </button>
+                    <div class="notification-badge">2</div>
+                </div>
+                
+                <!-- User Avatar -->
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                    <span class="text-sm font-bold text-white">{{ session.username[0].upper() if session.username else 'E' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Active Sessions -->
+            <div class="status-card">
+                <div class="status-card-icon bg-gradient-to-br from-green-500/20 to-emerald-500/20">
+                    <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="status-card-value text-green-400">3</div>
+                <div class="status-card-label">Active Sessions</div>
+                <div class="text-xs text-green-400 mt-1">Live Monitoring</div>
+            </div>
+
+            <!-- Total Students -->
+            <div class="status-card">
+                <div class="status-card-icon bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                    <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                    </svg>
+                </div>
+                <div class="status-card-value">247</div>
+                <div class="status-card-label">Total Students</div>
+                <div class="text-xs text-cyan-400 mt-1">Registered</div>
+            </div>
+
+            <!-- Questions Created -->
+            <div class="status-card">
+                <div class="status-card-icon bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                    <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="status-card-value">184</div>
+                <div class="status-card-label">Questions</div>
+                <div class="text-xs text-purple-400 mt-1">In Question Bank</div>
+            </div>
+
+            <!-- AI Alerts -->
+            <div class="status-card">
+                <div class="status-card-icon bg-gradient-to-br from-yellow-500/20 to-orange-500/20">
+                    <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <div class="status-card-value text-yellow-400">2</div>
+                <div class="status-card-label">AI Alerts</div>
+                <div class="text-xs text-yellow-400 mt-1">Needs Review</div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content Grid -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <!-- Live Monitoring Module -->
+            <div class="xl:col-span-2">
+                <div class="card mb-8">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-bold text-white flex items-center">
+                                <svg class="w-6 h-6 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                Live Test Sessions
+                            </h2>
+                            <div class="flex space-x-2">
+                                <button class="btn btn-sm btn-success">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    Monitor All
+                                </button>
+                                <button class="btn btn-sm btn-secondary">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Active Session Cards -->
+                        <div class="space-y-4">
+                            <!-- Session 1 -->
+                            <div class="p-4 bg-green-500/10 rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all duration-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-white">Mathematics Final Exam</h3>
+                                            <p class="text-sm text-gray-400">Room A • Started 30 minutes ago</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="badge badge-success mb-1">Active</div>
+                                        <p class="text-sm text-gray-300">24 students</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                        <span class="flex items-center text-green-400">
+                                            <div class="status-online mr-2"></div>
+                                            All systems normal
+                                        </span>
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            90 min remaining
+                                        </span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="btn btn-sm btn-primary">
+                                            Monitor
+                                        </button>
+                                        <button class="btn btn-sm btn-ghost">
+                                            Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Session 2 -->
+                            <div class="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20 hover:border-yellow-500/40 transition-all duration-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-white">Physics Quiz - Room B</h3>
+                                            <p class="text-sm text-gray-400">Started 15 minutes ago</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="badge badge-warning mb-1">Alerts</div>
+                                        <p class="text-sm text-gray-300">12 students</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                        <span class="flex items-center text-yellow-400">
+                                            <div class="status-busy mr-2"></div>
+                                            2 AI alerts pending
+                                        </span>
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            30 min remaining
+                                        </span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="btn btn-sm btn-warning">
+                                            Review Alerts
+                                        </button>
+                                        <button class="btn btn-sm btn-ghost">
+                                            Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Session 3 -->
+                            <div class="p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 hover:border-blue-500/40 transition-all duration-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-white">Chemistry Lab Assessment</h3>
+                                            <p class="text-sm text-gray-400">Just started • Self-paced</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="badge badge-primary mb-1">Active</div>
+                                        <p class="text-sm text-gray-300">8 students</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                        <span class="flex items-center text-green-400">
+                                            <div class="status-online mr-2"></div>
+                                            No issues detected
+                                        </span>
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            No time limit
+                                        </span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="btn btn-sm btn-primary">
+                                            Monitor
+                                        </button>
+                                        <button class="btn btn-sm btn-ghost">
+                                            Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>

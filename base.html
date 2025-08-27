@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}CYGENTIC AI Test Center - Secure AI-Powered Online Testing Platform{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}AI testing, online examination, secure proctoring, CYGENTIC{% endblock %}">
+    <meta name="author" content="CYGENTIC AI">
+    
+    <!-- Security and Performance Meta Tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <title>{% block title %}CYGENTIC AI Test Center{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts - Geometric Sans-Serif -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    {% block extra_head %}{% endblock %}
+    
+    <style>
+    /* Dropdown link styling */
+    .dropdown-link {
+        display: block;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        color: rgba(209, 213, 219, 1);
+        transition: all 0.2s ease;
+    }
+    
+    .dropdown-link:hover {
+        background-color: rgba(51, 65, 85, 0.5);
+        color: rgba(6, 182, 212, 1);
+    }
+
+    /* Global Dropdown Portal */
+    #dropdown-portal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 99999;
+    }
+
+    #dropdown-portal.active {
+        pointer-events: auto;
+    }
+
+    /* Enhanced dropdown menu visibility */
+    #dropdown-menu {
+        position: absolute;
+        right: 0;
+        margin-top: 2px;
+        width: 12rem;
+        background-color: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(12px);
+        border-radius: 0.5rem;
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(6, 182, 212, 0.3);
+        transform: translateY(-10px) scale(0.95);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+
+    #dropdown-menu.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+    }
+
+    #dropdown-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    #dropdown-backdrop.active {
+        opacity: 1;
+    }
+</style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 min-h-screen text-white font-poppins overflow-x-hidden gpu-accelerated">
+    <!-- Dropdown Portal - For better stacking context -->
+    <div id="dropdown-portal" class="hidden">
+        <div id="dropdown-backdrop"></div>
+        <!-- Dropdown content will be moved here via JavaScript -->
+    </div>
+    <!-- Fixed Navigation Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-lg border-b border-cyan-500/20">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 lg:h-20">
+                <!-- Logo Section -->
+                <div class="flex items-center space-x-3">
+                    <a href="{{ url_for('home') }}" class="flex items-center space-x-3 group">
+                        <!-- Logo Image -->
+                        <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-lg overflow-hidden group-hover:scale-110 transition-transform duration-300">
+                            <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="CYGENTIC Logo" class="w-full h-full object-cover">
+                        </div>
+                        <!-- Logo Text -->
+                        <div class="hidden sm:block">
+                            <h1 class="text-xl lg:text-2xl font-bold font-montserrat bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                                CYGENTIC
+                            </h1>
+                            <p class="text-xs lg:text-sm text-cyan-300 font-medium tracking-wide">AI Test Center</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}nav-link-active{% endif %}">
+                        Home
+                    </a>
+                    <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}nav-link-active{% endif %}">
+                        About
+                    </a>
+                    <a href="{{ url_for('test_categories') }}" class="nav-link {% if request.endpoint == 'test_categories' %}nav-link-active{% endif %}">
+                        Test Categories
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="nav-link {% if request.endpoint == 'contact' %}nav-link-active{% endif %}">
+                        Contact
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    {% if session.get('username') %}
+                        <!-- Logged In User -->
+                        <div class="flex items-center space-x-3">
+                            <!-- Notification Icon -->
+                            <button class="p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200">
+                                <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-3.5-3.5a1.5 1.5 0 010-2.12L20 8h-5V4a2 2 0 00-2-2H9a2 2 0 00-2 2v4H2l3.5 3.38a1.5 1.5 0 010 2.12L2 17h5v3a2 2 0 002 2h6a2 2 0 002-2v-3z"/>
+                                </svg>
+                            </button>
+                            
+                            <!-- User Profile Dropdown -->
+                            <div class="relative" id="user-dropdown">
+                                <button class="flex items-center space-x-2 p-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-200" id="dropdown-toggle">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center">
+                                        <span class="text-sm font-semibold text-white">{{ session.username[0].upper() }}</span>
+                                    </div>
+                                    <span class="hidden sm:block text-sm font-medium">{{ session.username }}</span>
+                                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Dropdown Menu Template (will be moved to portal) -->
+                                <template id="dropdown-content-template">
+                                    <div class="p-2">
+                                        {% if session.user_type == 'student' %}
+                                            <a href="{{ url_for('student_dashboard') }}" class="dropdown-link">Dashboard</a>
+                                            <a href="{{ url_for('student_profile') }}" class="dropdown-link">Profile</a>
+                                        {% elif session.user_type == 'examiner' %}
+                                            <a href="{{ url_for('examiner_dashboard') }}" class="dropdown-link">Dashboard</a>
+                                        {% elif session.user_type == 'admin' %}
+                                            <a href="{{ url_for('admin_dashboard') }}" class="dropdown-link">Dashboard</a>
+                                        {% endif %}
+                                        <hr class="border-slate-600 my-2">
+                                        <a href="{{ url_for('logout') }}" class="dropdown-link text-red-400 hover:text-red-300">Logout</a>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Not Logged In -->
+                        <div class="flex items-center gap-3">
+                            <a href="{{ url_for('login') }}" class="btn-secondary hidden sm:inline-flex">
+                                Login
+                            </a>
+                            <a href="{{ url_for('register') }}" class="btn-primary">
+                                Register
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="lg:hidden hidden bg-slate-800/95 backdrop-blur-lg border-t border-cyan-500/20 mt-1">
+                <div class="px-4 py-4 space-y-3">
+                    <a href="{{ url_for('home') }}" class="mobile-nav-link">Home</a>
+                    <a href="{{ url_for('about') }}" class="mobile-nav-link">About</a>
+                    <a href="{{ url_for('test_categories') }}" class="mobile-nav-link">Test Categories</a>
+                    <a href="{{ url_for('contact') }}" class="mobile-nav-link">Contact</a>
+                    
+                    {% if not session.get('username') %}
+                        <hr class="border-slate-600 my-3">
+                        <a href="{{ url_for('login') }}" class="mobile-nav-link">Login</a>
+                        <a href="{{ url_for('register') }}" class="mobile-nav-link">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="pt-16 lg:pt-20 min-h-screen">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="fixed top-20 right-4 z-40 space-y-2">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}" id="flash-{{ loop.index }}">
+                            <div class="flex items-center justify-between">
+                                <span>{{ message }}</span>
+                                <button data-flash-index="{{ loop.index }}" class="flash-close-btn ml-3 text-white/80 hover:text-white">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/90 backdrop-blur-lg border-t border-cyan-500/20 mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- Main Footer Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg overflow-hidden">
+                            <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="CYGENTIC Logo" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold font-montserrat bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                                CYGENTIC
+                            </h3>
+                            <p class="text-sm text-cyan-300">AI Test Center</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Revolutionizing online testing with AI-powered security and cutting-edge proctoring technology.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-cyan-400">Quick Links</h4>
+                    <nav class="flex flex-col space-y-2">
+                        <a href="{{ url_for('home') }}" class="footer-link block">Home</a>
+                        <a href="{{ url_for('about') }}" class="footer-link block">About Us</a>
+                        <a href="{{ url_for('test_categories') }}" class="footer-link block">Test Categories</a>
+                        <a href="{{ url_for('contact') }}" class="footer-link block">Contact</a>
+                    </nav>
+                </div>
+
+                <!-- User Portals -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-cyan-400">User Portals</h4>
+                    <nav class="flex flex-col space-y-2">
+                        <a href="{{ url_for('student_login') }}" class="footer-link block">Student Portal</a>
+                        <a href="{{ url_for('examiner_login') }}" class="footer-link block">Examiner Portal</a>
+                        <a href="{{ url_for('admin_login') }}" class="footer-link block">Admin Portal</a>
+                        <a href="{{ url_for('register') }}" class="footer-link block">Register</a>
+                    </nav>
+                </div>
+
+                <!-- Contact & Social -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-cyan-400">Connect</h4>
+                    <div class="space-y-3">
+                        <p class="text-sm text-gray-300">
+                            <span class="text-cyan-400">Email:</span><br>
+                            support@cygentic.ai
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            <span class="text-cyan-400">Phone:</span><br>
+                            +1 (555) 123-4567
+                        </p>
+                        <!-- Social Media Icons -->
+                        <div class="flex space-x-3 pt-2">
+                            <a href="https://www.linkedin.com/company/cygentic" target="_blank" rel="noopener noreferrer" class="social-icon" title="LinkedIn">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                            <a href="https://github.com/Msr-offical" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="border-t border-slate-700 mt-8 pt-6">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <div class="text-sm text-gray-400">
+                        © 2025 CYGENTIC AI Test Center. All rights reserved. | Developed by <a href="https://www.linkedin.com/in/msr04/" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 transition-colors duration-200">Muhammad Saad</a>
+                    </div>
+                    <div class="flex space-x-6 text-sm">
+                        <a href="#" class="footer-link">Privacy Policy</a>
+                        <a href="#" class="footer-link">Terms of Service</a>
+                        <a href="#" class="footer-link">Security</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <!-- Futuristic Animations -->
+    <script src="{{ url_for('static', filename='js/futuristic-animations.js') }}" defer></script>
+    
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // User dropdown toggle with portal implementation
+        const dropdownToggle = document.getElementById('dropdown-toggle');
+        const userDropdown = document.getElementById('user-dropdown');
+        const dropdownPortal = document.getElementById('dropdown-portal');
+        const dropdownBackdrop = document.getElementById('dropdown-backdrop');
+        const template = document.getElementById('dropdown-content-template');
+        
+        // Create the dropdown menu element
+        const dropdownMenu = document.createElement('div');
+        dropdownMenu.id = 'dropdown-menu';
+        
+        // Function to position the dropdown
+        function positionDropdown() {
+            if (!userDropdown) return;
+            
+            const rect = userDropdown.getBoundingClientRect();
+            // Clone the template content
+            if (!dropdownMenu.hasChildNodes() && template) {
+                dropdownMenu.innerHTML = template.innerHTML;
+            }
+            
+            // Position the dropdown
+            dropdownMenu.style.top = `${rect.bottom}px`;
+            dropdownMenu.style.right = `${window.innerWidth - rect.right}px`;
+        }
+        
+        // Toggle dropdown visibility
+        function toggleDropdown(show) {
+            if (show) {
+                // Show dropdown
+                dropdownPortal.classList.remove('hidden');
+                dropdownPortal.classList.add('active');
+                dropdownBackdrop.classList.add('active');
+                
+                // Append and position the dropdown
+                if (!dropdownPortal.contains(dropdownMenu)) {
+                    dropdownPortal.appendChild(dropdownMenu);
+                }
+                
+                positionDropdown();
+                
+                // Show with a slight delay for smooth animation
+                setTimeout(() => {
+                    dropdownMenu.classList.add('visible');
+                }, 10);
+            } else {
+                // Hide dropdown
+                dropdownMenu.classList.remove('visible');
+                dropdownBackdrop.classList.remove('active');
+                
+                // Remove from DOM after animation
+                setTimeout(() => {
+                    dropdownPortal.classList.remove('active');
+                    dropdownPortal.classList.add('hidden');
+                }, 300);
+            }
+        }
+        
+        if (dropdownToggle && userDropdown) {
+            // Toggle dropdown on button click
+            dropdownToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                const isActive = dropdownPortal.classList.contains('active');
+                toggleDropdown(!isActive);
+            });
+            
+            // Close dropdown when clicking outside
+            dropdownBackdrop.addEventListener('click', function(e) {
+                toggleDropdown(false);
+            });
+            
+            // Update position on resize
+            window.addEventListener('resize', function() {
+                if (dropdownPortal.classList.contains('active')) {
+                    positionDropdown();
+                }
+            });
+        }
+
+        // Mobile sidebar toggle for dashboard pages
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeSidebarBtn = document.getElementById('close-sidebar');
+            const sidebar = document.getElementById('sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            if (mobileMenuBtn && sidebar) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    sidebar.classList.add('open');
+                    if (mobileOverlay) {
+                        mobileOverlay.classList.remove('hidden');
+                    }
+                });
+            }
+            
+            if (closeSidebarBtn && sidebar) {
+                closeSidebarBtn.addEventListener('click', function() {
+                    sidebar.classList.remove('open');
+                    if (mobileOverlay) {
+                        mobileOverlay.classList.add('hidden');
+                    }
+                });
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('open');
+                    mobileOverlay.classList.add('hidden');
+                });
+            }
+        });
+
+        // Flash message auto-close
+        function closeFlash(index) {
+            const flashElement = document.getElementById(`flash-${index}`);
+            if (flashElement) {
+                flashElement.style.opacity = '0';
+                flashElement.style.transform = 'translateX(100%)';
+                setTimeout(() => flashElement.remove(), 300);
+            }
+        }
+
+        // Event delegation for flash close buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('flash-close-btn') || e.target.closest('.flash-close-btn')) {
+                const button = e.target.classList.contains('flash-close-btn') ? e.target : e.target.closest('.flash-close-btn');
+                const flashIndex = button.getAttribute('data-flash-index');
+                if (flashIndex) {
+                    closeFlash(flashIndex);
+                }
+            }
+        });
+
+        // Auto-close flash messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach((flash, index) => {
+                closeFlash(index + 1);
+            });
+        }, 5000);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

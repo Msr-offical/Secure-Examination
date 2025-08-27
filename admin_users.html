@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block title %}User Management - CYGENTIC AI Test Center{% endblock %}
+{% block content %}
+<div class="flex min-h-screen">
+    <aside class="w-64 bg-slate-900/95 backdrop-blur-lg border-r border-yellow-500/20 fixed h-full pt-16 lg:pt-20">
+        <div class="p-6">
+            <nav class="space-y-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">Dashboard</a>
+                <a href="{{ url_for('admin_users') }}" class="sidebar-link active">Users</a>
+                <a href="{{ url_for('admin_system') }}" class="sidebar-link">Settings</a>
+                <a href="{{ url_for('admin_analytics') }}" class="sidebar-link">Analytics</a>
+                <hr class="border-slate-700 my-4">
+                <a href="{{ url_for('logout') }}" class="sidebar-link text-red-400">Logout</a>
+            </nav>
+        </div>
+    </aside>
+    <main class="flex-1 ml-64 p-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">User Management</h1>
+            <p class="text-gray-300">Manage registered students and system users.</p>
+        </div>
+
+        <!-- Student Management Section -->
+        <div class="card p-8 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Registered Students</h2>
+                    <p class="text-gray-400 mt-1">Total: <span id="studentCount" class="text-cyan-400 font-semibold">Loading...</span></p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="refreshStudents" class="btn-secondary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Refresh
+                    </button>
+                    <button id="deleteAllStudents" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Delete All Students
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Students List -->
+            <div id="studentsContainer">
+                <div id="loadingSpinner" class="flex items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+                    <span class="ml-3 text-gray-400">Loading students...</span>
+                </div>
+                <div id="studentsGrid" class="hidden grid grid-cols-1 gap-4"></div>
+                <div id="noStudents" class="hidden text-center py-12">
+                    <svg class="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-400 mb-2">No Students Registered</h3>
+                    <p class="text-gray-500">There are currently no registered students in the system.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-800 border border-red-500/30 rounded-xl p-8 max-w-md w-full mx-4 animate-fade-in">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Confirm Deletion</h3>
+            <p class="text-gray-300 mb-6">Are you sure you want to delete <strong id="deleteCountText">all registered students</strong>? This action cannot be undone.</p>
+            <div class="flex gap-3 justify-center">
+                <button id="cancelDelete" class="btn-secondary">Cancel</button>
+                <button id="confirmDelete" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors duration-200">
+                    Delete All
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables
+let studentsData = [];
+
+// DOM Elements
+const refreshBtn = document.getElementById('refreshStudents');
+const deleteBtn = document.getElementById('deleteAllStudents');
+const modal = document.getElementById('deleteConfirmModal');
+const cancelBtn = document.getElementById('cancelDelete');
+const confirmBtn = document.getElementById('confirmDelete');
+const studentsContainer = document.getElementById('studentsContainer');
+const loadingSpinner = document.getElementById('loadingSpinner');
+const studentsGrid = document.getElementById('studentsGrid');
+const noStudents = document.getElementById('noStudents');
+const studentCount = document.getElementById('studentCount');
+const deleteCountText = document.getElementById('deleteCountText');
+
+// Event Listeners
+refreshBtn.addEventListener('click', loadStudents);
+deleteBtn.addEventListener('click', showDeleteConfirmation);
+cancelBtn.addEventListener('click', hideModal);
+confirmBtn.addEventListener('click', deleteAllStudents);
+
+// Functions
+function loadStudents() {
+    showLoading();
+    
+    fetch('/admin/get-students')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                studentsData = data.students;
+                displayStudents(data.students);
+                updateStudentCount(data.count);
+            } else {
+                showError('Failed to load students: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Network error occurred while loading students');
+        });
+}
+
+function displayStudents(students) {
+    hideLoading();
+    
+    if (students.length === 0) {
+        showNoStudents();
+        return;
+    }
+    
+    studentsGrid.innerHTML = '';
+    
+    students.forEach(student => {
+        const studentCard = createStudentCard(student);
+        studentsGrid.appendChild(studentCard);
+    });
+    
+    showStudentsGrid();
+}
+
+function createStudentCard(student) {
+    const div = document.createElement('div');
+    div.className = 'p-4 bg-slate-700/30 rounded-lg border border-slate-600/50 hover:border-cyan-500/30 transition-all duration-200';
+    
+    const createdAt = new Date(student.created_at).toLocaleDateString();
+    const statusColor = student.is_active ? 'text-green-400' : 'text-red-400';
+    const statusText = student.is_active ? 'Active' : 'Inactive';
+    
+    div.innerHTML = `
+        <div class="flex justify-between items-start">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-bold text-cyan-400">${student.full_name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-white">${student.full_name}</h3>
+                        <p class="text-sm text-gray-400">@${student.username}</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <div>
+                        <span class="text-gray-400">Student ID:</span>
+                        <span class="text-cyan-400 font-mono ml-1">${student.unique_id}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-400">Email:</span>
+                        <span class="text-white ml-1">${student.email}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-400">Test Category:</span>
+                        <span class="text-white ml-1">${student.test_category}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-400">Registered:</span>
+                        <span class="text-white ml-1">${createdAt}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ml-4 text-right">
+                <span class="inline-block px-2 py-1 text-xs font-semibold ${statusColor} bg-slate-600/50 rounded-full">
+                    ${statusText}
+                </span>
+            </div>
+        </div>
+    `;
+    
+    return div;
+}
+
+function showDeleteConfirmation() {
+    if (studentsData.length === 0) {
+        showNotification('No students to delete', 'info');
+        return;
+    }
+    
+    deleteCountText.textContent = `all ${studentsData.length} registered student${studentsData.length !== 1 ? 's' : ''}`;
+    modal.classList.remove('hidden');
+}
+
+function hideModal() {
+    modal.classList.add('hidden');
+}
+
+function deleteAllStudents() {
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>Deleting...';
+    
+    fetch('/admin/delete-students', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadStudents(); // Refresh the list
+            hideModal();
+        } else {
+            showNotification('Failed to delete students: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Network error occurred while deleting students', 'error');
+    })
+    .finally(() => {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = 'Delete All';
+    });
+}
+
+function showLoading() {
+    loadingSpinner.classList.remove('hidden');
+    studentsGrid.classList.add('hidden');
+    noStudents.classList.add('hidden');
+}
+
+function hideLoading() {
+    loadingSpinner.classList.add('hidden');
+}
+
+function showStudentsGrid() {
+    studentsGrid.classList.remove('hidden');
+    noStudents.classList.add('hidden');
+}
+
+function showNoStudents() {
+    studentsGrid.classList.add('hidden');
+    noStudents.classList.remove('hidden');
+}
+
+function updateStudentCount(count) {
+    studentCount.textContent = count;
+    deleteBtn.style.display = count > 0 ? 'flex' : 'none';
+}
+
+function showError(message) {
+    hideLoading();
+    showNotification(message, 'error');
+    showNoStudents();
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-20 right-4 z-50 p-4 rounded-lg border max-w-sm transform transition-all duration-300 translate-x-full`;
+    
+    // Set colors based on type
+    switch(type) {
+        case 'success':
+            notification.className += ' bg-green-500/20 border-green-500/30 text-green-400';
+            break;
+        case 'error':
+            notification.className += ' bg-red-500/20 border-red-500/30 text-red-400';
+            break;
+        case 'info':
+        default:
+            notification.className += ' bg-blue-500/20 border-blue-500/30 text-blue-400';
+            break;
+    }
+    
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <span class="flex-1">${message}</span>
+            <button class="ml-3 text-gray-400 hover:text-white" onclick="this.parentElement.parentElement.remove()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 10);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 5000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadStudents();
+});
+</script>
+
+{% endblock %}

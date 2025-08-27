@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}System Settings - CYGENTIC AI Test Center{% endblock %}
+{% block content %}
+<div class="flex min-h-screen">
+    <aside class="w-64 bg-slate-900/95 backdrop-blur-lg border-r border-yellow-500/20 fixed h-full pt-16 lg:pt-20">
+        <div class="p-6">
+            <nav class="space-y-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">Dashboard</a>
+                <a href="{{ url_for('admin_users') }}" class="sidebar-link">Users</a>
+                <a href="{{ url_for('admin_system') }}" class="sidebar-link active">Settings</a>
+                <a href="{{ url_for('admin_analytics') }}" class="sidebar-link">Analytics</a>
+                <hr class="border-slate-700 my-4">
+                <a href="{{ url_for('logout') }}" class="sidebar-link text-red-400">Logout</a>
+            </nav>
+        </div>
+    </aside>
+    <main class="flex-1 ml-64 p-8">
+        <h1 class="text-3xl font-bold text-white mb-8">System Settings</h1>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-white mb-6">AI Configuration</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Proctoring Sensitivity</span>
+                        <select class="form-input w-32">
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Auto-flagging</span>
+                        <input type="checkbox" class="w-4 h-4 text-cyan-500 bg-slate-800 border-slate-600 rounded" checked>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-white mb-6">Security Settings</h2>
+                <div class="space-y-4">
+                    <button class="btn-secondary w-full">Update SSL Certificates</button>
+                    <button class="btn-secondary w-full">Backup Database</button>
+                    <button class="btn-danger w-full">Reset System</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
